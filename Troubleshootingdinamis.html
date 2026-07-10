@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Troubleshooting Routing Dinamis – RIP, OSPF, EIGRP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            color: #1a2c3e;
+            line-height: 1.75;
+            padding: 15px 10px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.12);
+            padding: 25px 20px;
+        }
+        h1 {
+            font-size: 1.8rem;
+            border-left: 6px solid #0077b6;
+            padding-left: 18px;
+            margin-bottom: 25px;
+            color: #023e5f;
+            word-break: break-word;
+        }
+        h2 {
+            font-size: 1.4rem;
+            margin: 35px 0 15px;
+            border-bottom: 2px solid #cbd5e1;
+            color: #0f4c5f;
+            padding-bottom: 6px;
+        }
+        h3 {
+            font-size: 1.15rem;
+            margin: 25px 0 10px;
+            color: #1e6f5c;
+        }
+        h4 {
+            font-size: 1.05rem;
+            margin: 18px 0 8px;
+            color: #1a4b6d;
+        }
+        p {
+            margin-bottom: 1rem;
+            text-align: justify;
+            text-indent: 0.4in;
+        }
+        p.no-indent {
+            text-indent: 0;
+        }
+        ul, ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+        li {
+            margin: 0.5rem 0;
+        }
+        code {
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #b91c1c;
+            word-break: break-word;
+        }
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 18px 0;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+        }
+        i {
+            font-style: italic;
+            color: #0b4a6f;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #f1f5f9;
+            color: #023e5f;
+            font-weight: 600;
+        }
+        figure {
+            margin: 25px 0;
+            text-align: center;
+            background: #fafcff;
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid #d0dce8;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+        }
+        figcaption {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #2c6e9e;
+            font-style: italic;
+        }
+        .note-box {
+            background: #f0f7fc;
+            padding: 14px 18px;
+            border-left: 4px solid #ff8c00;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .note-box strong {
+            color: #023e5f;
+        }
+        .glossary {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 6px 16px;
+            margin: 15px 0;
+        }
+        .glossary-term {
+            font-weight: 600;
+            color: #023e5f;
+        }
+        .glossary-desc {
+            color: #1a2c3e;
+        }
+        hr {
+            margin: 30px 0;
+            border: 0;
+            height: 1px;
+            background: linear-gradient(90deg, #bfd9f0, transparent);
+        }
+        .footer {
+            font-size: 0.75rem;
+            text-align: center;
+            color: #2c6b84;
+            margin-top: 15px;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 18px 14px; }
+            h1 { font-size: 1.5rem; padding-left: 14px; }
+            h2 { font-size: 1.25rem; }
+            h3 { font-size: 1.05rem; }
+            p { text-indent: 0.2in; }
+            table { font-size: 0.8rem; }
+            th, td { padding: 5px 6px; }
+            figure { padding: 6px; }
+            .glossary { grid-template-columns: 1fr; gap: 2px 0; }
+            .glossary-term { margin-top: 8px; }
+            pre { font-size: 0.8rem; padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>🔧 <i>Troubleshooting Routing Dinamis</i><br><span style="font-size:1.2rem; color:#0f4c5f;">(RIP, OSPF, dan EIGRP)</span></h1>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- BAGIAN : KARAKTERISTIK PROTOKOL ROUTING DINAMIS               -->
+    <!-- ============================================================ -->
+    <h2>Karakteristik <i>Protokol Routing Dinamis</i></h2>
+
+    <p>Terdapat beberapa <i>protokol routing dinamis</i> yang umum digunakan pada jaringan, masing-masing memiliki karakteristik dan <i>algoritma</i> yang berbeda. Pemahaman terhadap karakteristik ini penting agar proses <i>troubleshooting</i> dapat dilakukan secara tepat sasaran. Setiap <i>protokol</i> dirancang dengan pendekatan yang berbeda dalam menentukan jalur terbaik, menangani perubahan topologi, dan mengelola <i>routing table</i>. Perbedaan mendasar ini menjadi faktor kunci dalam mengidentifikasi akar permasalahan ketika terjadi gangguan pada jaringan.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th><i>Protokol</i></th>
+                <th>Jenis <i>Algoritma</i></th>
+                <th><i>Administrative Distance</i></th>
+                <th>Karakteristik Utama</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><i>RIP</i> (v1/v2)</td>
+                <td><i>Distance Vector</i></td>
+                <td>120</td>
+                <td><i>Metric</i> berdasarkan <i>hop count</i>, maksimal 15 <i>hop</i>, <i>update</i> periodik 30 detik. Sederhana namun memiliki keterbatasan skalabilitas karena batas <i>hop</i> yang kecil dan waktu <i>konvergensi</i> yang relatif lambat.</td>
+            </tr>
+            <tr>
+                <td><i>OSPF</i></td>
+                <td><i>Link State</i></td>
+                <td>110</td>
+                <td><i>Metric</i> berdasarkan <i>cost</i>/<i>bandwidth</i>, mendukung <i>area</i>, <i>konvergensi</i> cepat. <i>OSPF</i> membangun peta topologi lengkap menggunakan <i>Link State Database</i> (<i>LSDB</i>) dan menjalankan <i>algoritma Dijkstra</i> untuk menghitung jalur terpendek, sehingga sangat andal untuk jaringan berskala besar.</td>
+            </tr>
+            <tr>
+                <td><i>EIGRP</i></td>
+                <td><i>Advanced Distance Vector</i></td>
+                <td>90</td>
+                <td><i>Metric</i> komposit (<i>bandwidth</i> &amp; <i>delay</i>), <i>konvergensi</i> sangat cepat (<i>DUAL</i>). <i>EIGRP</i> menggabungkan keunggulan <i>distance vector</i> dan <i>link-state</i> dengan menyimpan informasi <i>feasible successor</i> sehingga dapat langsung beralih ke jalur cadangan tanpa perlu melakukan perhitungan ulang yang memakan waktu.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- BAGIAN : KONSEP DASAR TROUBLESHOOTING                         -->
+    <!-- ============================================================ -->
+    <h2>C. Konsep Dasar <i>Troubleshooting</i> Jaringan</h2>
+
+    <p><i>Troubleshooting</i> adalah proses sistematis untuk mengidentifikasi, menganalisis, dan menyelesaikan masalah pada suatu sistem. Dalam konteks jaringan komputer, <i>troubleshooting</i> dilakukan untuk menemukan penyebab gangguan konektivitas atau kegagalan fungsi <i>routing</i>, kemudian memperbaikinya agar jaringan kembali berjalan normal. Keberhasilan proses <i>troubleshooting</i> sangat bergantung pada pemahaman mendalam tentang arsitektur jaringan, protokol yang digunakan, serta kemampuan dalam menginterpretasikan informasi dari berbagai perintah diagnosis.</p>
+
+    <p>Terdapat tiga pendekatan umum yang biasa digunakan dalam <i>troubleshooting</i> jaringan berdasarkan lapisan model <i>OSI</i> (<i>Open Systems Interconnection</i>):</p>
+    <ul>
+        <li><strong><i>Top-Down Approach</i></strong> — analisis dimulai dari lapisan <i>Aplikasi</i> (lapisan 7) menuju lapisan <i>Fisik</i> (lapisan 1). Pendekatan ini cocok digunakan jika diduga masalah berasal dari sisi layanan atau aplikasi, misalnya ketika pengguna tidak dapat mengakses suatu layanan tertentu meskipun konektivitas dasar ke jaringan sudah berfungsi dengan baik.</li>
+        <li><strong><i>Bottom-Up Approach</i></strong> — analisis dimulai dari lapisan <i>Fisik</i> (lapisan 1) menuju lapisan <i>Aplikasi</i> (lapisan 7). Pendekatan ini sangat efektif untuk masalah konektivitas dasar seperti kabel yang putus, konektor yang longgar, <i>interface</i> yang dalam kondisi <i>down</i>, atau masalah pada perangkat keras lainnya. Dengan memastikan lapisan terbawah berfungsi terlebih dahulu, kita dapat mengeliminasi kemungkinan penyebab yang paling mendasar.</li>
+        <li><strong><i>Divide and Conquer</i></strong> — analisis dimulai dari lapisan tengah (biasanya <i>Network Layer</i> pada lapisan 3), kemudian menentukan arah pemeriksaan berikutnya berdasarkan hasil temuan awal. Jika ditemukan masalah pada <i>Network Layer</i>, maka pemeriksaan dapat diarahkan ke lapisan yang lebih bawah atau lebih atas sesuai indikasi yang muncul. Pendekatan ini sering menjadi pilihan karena efisien dan dapat mempersempit area pencarian masalah secara cepat.</li>
+    </ul>
+
+    <!-- GAMBAR 2 : TIGA PENDEKATAN TROUBLESHOOTING -->
+    <figure>
+        <img src="troubleshooting-approaches.png" alt="Tiga pendekatan troubleshooting berbasis OSI">
+        <figcaption>Gambar 2. Tiga pendekatan metodologi <i>troubleshooting</i> berbasis model <i>OSI</i></figcaption>
+    </figure>
+
+    <h3>Langkah Umum <i>Troubleshooting</i></h3>
+    <p>Proses <i>troubleshooting</i> yang efektif biasanya mengikuti langkah-langkah sistematis yang telah terbukti berhasil dalam praktik di lapangan. Berikut adalah enam langkah umum yang dapat dijadikan panduan:</p>
+    <ol>
+        <li><strong>Mengidentifikasi gejala/masalah</strong> yang dilaporkan pengguna. Pada tahap ini, penting untuk mengumpulkan informasi sebanyak mungkin dari pengguna, termasuk kapan masalah mulai terjadi, aplikasi apa yang terdampak, dan apakah masalah bersifat intermittent atau persisten.</li>
+        <li><strong>Mengumpulkan informasi</strong> terkait kondisi jaringan saat ini. Gunakan perintah diagnosis seperti <code>show ip interface brief</code>, <code>show ip route</code>, dan <code>show ip protocols</code> untuk mendapatkan gambaran menyeluruh tentang status terkini jaringan.</li>
+        <li><strong>Menganalisis kemungkinan penyebab</strong> masalah berdasarkan data yang telah dikumpulkan. Pada tahap ini, buatlah hipotesis tentang apa yang mungkin menjadi akar permasalahan.</li>
+        <li><strong>Membuat rencana/hipotesis penyelesaian</strong> masalah. Tentukan langkah perbaikan yang akan dilakukan, dengan mempertimbangkan dampak perubahan terhadap jaringan secara keseluruhan.</li>
+        <li><strong>Menerapkan solusi</strong> dan melakukan pengujian. Lakukan perubahan konfigurasi satu per satu dan segera uji apakah perubahan tersebut berhasil mengatasi masalah.</li>
+        <li><strong>Mendokumentasikan hasil <i>troubleshooting</i></strong> untuk referensi ke depan. Dokumentasi yang baik akan sangat membantu jika masalah serupa muncul di kemudian hari atau untuk keperluan audit jaringan.</li>
+    </ol>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- BAGIAN : PERMASALAHAN UMUM PADA ROUTING DINAMIS               -->
+    <!-- ============================================================ -->
+    <h2>D. Permasalahan Umum pada <i>Routing Dinamis</i></h2>
+
+    <p>Beberapa permasalahan yang sering dijumpai pada implementasi <i>routing dinamis</i> di lapangan antara lain sebagai berikut. Setiap permasalahan memiliki karakteristik dan penyebab yang berbeda, sehingga memerlukan pendekatan <i>troubleshooting</i> yang spesifik.</p>
+
+    <h3>1. <i>Neighbor</i>/Tetangga <i>Router</i> Tidak Terbentuk</h3>
+    <p>Dua <i>router</i> yang seharusnya saling bertetangga (<i>neighbor</i>) tidak dapat membentuk hubungan <i>routing</i>. Hal ini umum terjadi pada <i>protokol</i> berbasis <i>link-state</i> seperti <i>OSPF</i> yang sangat bergantung pada pembentukan hubungan <i>adjacency</i> untuk menukarkan informasi <i>topologi</i>. Tanpa <i>neighbor</i> yang terbentuk, <i>router</i> tidak akan pernah menerima informasi rute dari <i>router</i> lain yang berada di sisi tersebut.</p>
+    <ul>
+        <li><strong>Penyebab:</strong> perbedaan nomor <i>Area</i>, <i>Autonomous System</i> (<i>AS</i>), atau <i>Process ID</i>. Pada <i>OSPF</i>, semua <i>interface</i> dalam satu <i>area</i> harus memiliki nomor <i>area</i> yang sama. Perbedaan sekecil apapun akan menghalangi pembentukan <i>neighbor</i>.</li>
+        <li><strong>Penyebab:</strong> interval <i>Hello Timer</i> dan <i>Dead Timer</i> tidak sama di kedua sisi. Kedua <i>timer</i> ini harus identik pada kedua <i>router</i> yang saling terhubung. Jika berbeda, <i>router</i> akan menganggap pasangannya tidak responsif dan gagal membentuk <i>neighbor</i>.</li>
+        <li><strong>Penyebab:</strong> <i>subnet mask</i> antar-<i>interface</i> tidak sesuai (<i>mismatch</i>). <i>Router</i> hanya akan membentuk <i>neighbor</i> jika kedua <i>interface</i> berada pada <i>subnet</i> yang sama.</li>
+        <li><strong>Penyebab:</strong> media transmisi terputus atau <i>interface</i> dalam kondisi <i>down</i>/<i>shutdown</i>. Masalah fisik seperti kabel putus atau <i>interface</i> yang secara administratif di-<i>shutdown</i> akan mencegah pertukaran paket <i>Hello</i> yang diperlukan untuk membentuk <i>neighbor</i>.</li>
+    </ul>
+
+    <h3>2. Rute Tidak Muncul pada <i>Routing Table</i></h3>
+    <p>Jaringan tujuan tidak muncul pada <i>tabel routing</i> meskipun koneksi fisik dan <i>protokol</i> sudah dikonfigurasi. Kondisi ini dapat menyebabkan <i>router</i> tidak mengetahui cara mencapai jaringan tertentu, sehingga paket data tidak dapat diteruskan ke tujuan yang diinginkan.</p>
+    <ul>
+        <li><strong>Penyebab:</strong> jaringan belum <i>di-advertise</i> menggunakan perintah <i>network</i> pada konfigurasi <i>protokol routing</i>. Pada <i>RIP</i> dan <i>OSPF</i>, setiap jaringan yang ingin diumumkan harus dideklarasikan secara eksplisit menggunakan perintah <code>network</code>. Jika ada jaringan yang terlewat, jaringan tersebut tidak akan diketahui oleh <i>router</i> lain.</li>
+        <li><strong>Penyebab:</strong> adanya <i>filtering</i> rute (<i>distribute-list</i>, <i>route-map</i>) yang menghalangi rute tersebut. <i>Administrator</i> mungkin telah mengkonfigurasi <i>filter</i> untuk membatasi rute yang diterima atau dikirim, namun kadang konfigurasi ini terlalu ketat dan menghalangi rute yang seharusnya di-<i>advertise</i>.</li>
+        <li><strong>Penyebab:</strong> nilai <i>Administrative Distance</i> dari sumber lain lebih kecil sehingga rute tersebut diabaikan. Jika <i>router</i> menerima rute yang sama dari dua sumber berbeda, rute dengan <i>Administrative Distance</i> yang lebih kecil akan diutamakan. Misalnya, jika rute statis dengan <i>AD</i> 1 dikonfigurasi, maka rute dinamis dengan <i>AD</i> yang lebih besar (seperti <i>RIP</i> dengan AD 120) akan diabaikan.</li>
+    </ul>
+
+    <h3>3. <i>Routing Loop</i></h3>
+    <p><i>Routing loop</i> terjadi ketika paket data berputar terus-menerus di antara beberapa <i>router</i> tanpa pernah mencapai tujuan, sehingga menyebabkan pemborosan <i>bandwidth</i> dan penurunan kinerja jaringan secara signifikan. Fenomena ini dapat menyebabkan <i>Time-to-Live</i> (<i>TTL</i>) paket habis dan paket tersebut dibuang, sehingga komunikasi antar jaringan menjadi terhambat.</p>
+    <ul>
+        <li>Umumnya terjadi pada <i>protokol distance-vector</i> seperti <i>RIP</i> akibat lambatnya proses <i>konvergensi</i>. Karena <i>router</i> hanya mengetahui informasi dari tetangga terdekat, perubahan topologi membutuhkan waktu untuk disebarkan ke seluruh jaringan. Selama proses ini, <i>router</i> mungkin masih menggunakan informasi rute yang sudah tidak valid.</li>
+        <li>Dapat diatasi dengan mekanisme <i>split horizon</i> (mencegah rute dikirim kembali ke interface asal), <i>route poisoning</i> (menandai rute yang tidak valid dengan <i>metric</i> tak terhingga), dan <i>hold-down timer</i> (menahan pembaruan rute untuk sementara waktu agar stabilisasi tercapai).</li>
+    </ul>
+
+    <h3>4. <i>Konvergensi</i> Lambat (<i>Slow Convergence</i>)</h3>
+    <p><i>Konvergensi</i> adalah kondisi ketika seluruh <i>router</i> pada jaringan memiliki informasi <i>routing table</i> yang konsisten dan identik. <i>Konvergensi</i> yang lambat menyebabkan jaringan rentan terhadap <i>routing loop</i> dan paket yang hilang (<i>packet loss</i>) selama proses pembaruan berlangsung. Pada periode ini, <i>router</i> mungkin memiliki pandangan yang berbeda tentang topologi jaringan, sehingga keputusan <i>routing</i> menjadi tidak optimal atau bahkan salah. Faktor-faktor seperti ukuran jaringan, jumlah <i>router</i>, dan protokol yang digunakan sangat mempengaruhi kecepatan <i>konvergensi</i>.</p>
+
+    <h3>5. Kesalahan <i>Redistribusi</i> Rute</h3>
+    <p><i>Redistribusi</i> rute digunakan ketika suatu jaringan menjalankan lebih dari satu <i>protokol routing</i> sekaligus. Kesalahan pada konfigurasi <i>redistribusi</i> dapat menyebabkan sebagian rute tidak diteruskan antar<i>protokol</i> atau menimbulkan <i>routing loop</i> antar<i>protokol</i>. Misalnya, jika <i>redistribusi</i> dari <i>OSPF</i> ke <i>RIP</i> tidak dikonfigurasi dengan benar, rute yang berasal dari <i>OSPF</i> mungkin tidak pernah sampai ke jaringan yang hanya menggunakan <i>RIP</i>. Selain itu, <i>redistribusi</i> yang tidak hati-hati dapat menimbulkan <i>routing loop</i> yang sangat sulit dilacak karena melibatkan dua <i>protokol</i> yang berbeda dengan mekanisme pencegahan <i>loop</i> yang berbeda pula.</p>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- BAGIAN : PERINTAH DIAGNOSIS PADA PERANGKAT ROUTER             -->
+    <!-- ============================================================ -->
+    <h2>E. Perintah Diagnosis pada Perangkat <i>Router</i> (<i>Cisco IOS</i>)</h2>
+
+    <p>Berikut adalah beberapa perintah yang umum digunakan untuk melakukan diagnosis dan <i>troubleshooting</i> <i>routing dinamis</i> pada perangkat <i>router</i> berbasis <i>Cisco IOS</i>. Perintah-perintah ini memberikan informasi penting yang dapat digunakan untuk mengidentifikasi akar permasalahan dan menentukan langkah perbaikan yang tepat.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Perintah</th>
+                <th>Fungsi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>show ip interface brief</code></td>
+                <td>Menampilkan status <i>interface</i> (<i>up</i>/<i>down</i>) dan alamat <i>IP</i> secara ringkas. Perintah ini adalah langkah pertama yang sangat penting untuk memastikan semua <i>interface</i> yang seharusnya aktif dalam kondisi <i>up/up</i>.</td>
+            </tr>
+            <tr>
+                <td><code>show ip route</code></td>
+                <td>Menampilkan <i>tabel routing</i> yang aktif pada <i>router</i>. Perintah ini menunjukkan semua rute yang dikenal oleh <i>router</i>, termasuk rute langsung, statis, dan dinamis beserta sumbernya.</td>
+            </tr>
+            <tr>
+                <td><code>show ip protocols</code></td>
+                <td>Menampilkan <i>protokol routing</i> yang berjalan beserta parameternya seperti versi, <i>timer</i>, dan jaringan yang di-<i>advertise</i>. Informasi ini sangat berguna untuk memverifikasi apakah konfigurasi <i>protokol</i> sudah sesuai dengan yang diinginkan.</td>
+            </tr>
+            <tr>
+                <td><code>show ip ospf neighbor</code></td>
+                <td>Menampilkan status <i>neighbor OSPF</i> dan <i>state</i>-nya. Perintah ini menunjukkan apakah hubungan <i>adjacency</i> telah terbentuk sempurna (status <i>FULL</i>) atau masih dalam tahap awal (seperti <i>2WAY</i> atau <i>EXSTART</i>).</td>
+            </tr>
+            <tr>
+                <td><code>show ip rip database</code></td>
+                <td>Menampilkan basis data rute <i>RIP</i>. Perintah ini berguna untuk melihat rute yang diketahui oleh <i>RIP</i> sebelum dimasukkan ke <i>tabel routing</i>.</td>
+            </tr>
+            <tr>
+                <td><code>show ip eigrp neighbors</code></td>
+                <td>Menampilkan daftar tetangga <i>EIGRP</i> yang terbentuk. Informasi ini penting untuk memastikan hubungan <i>neighbor</i> <i>EIGRP</i> berfungsi dengan baik.</td>
+            </tr>
+            <tr>
+                <td><code>debug ip routing</code></td>
+                <td>Menampilkan proses perubahan <i>routing table</i> secara <i>real-time</i>. Perintah ini sangat bermanfaat untuk melacak bagaimana rute ditambahkan atau dihapus dari <i>tabel routing</i>, namun harus digunakan dengan hati-hati pada jaringan produksi karena dapat membebani <i>CPU router</i>.</td>
+            </tr>
+            <tr>
+                <td><code>ping</code> / <code>traceroute</code></td>
+                <td>Menguji konektivitas dan menelusuri jalur paket menuju tujuan. Kedua perintah ini adalah alat dasar namun sangat ampuh untuk menguji apakah komunikasi end-to-end berfungsi dan untuk mengidentifikasi titik kegagalan di sepanjang jalur.</td>
+            </tr>
+            <tr>
+                <td><code>show running-config</code></td>
+                <td>Menampilkan konfigurasi <i>router</i> yang sedang aktif. Perintah ini memungkinkan <i>administrator</i> untuk memeriksa keseluruhan konfigurasi dan mencari kemungkinan kesalahan atau ketidaksesuaian.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Contoh Output <code>show ip ospf neighbor</code></h3>
+    <pre><code>Router# show ip ospf neighbor
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           1   FULL/BDR        00:00:39    10.0.0.2        Gi0/0
+3.3.3.3           1   2WAY/DROTHER    00:00:35    10.0.0.3        Gi0/0</code></pre>
+    <p>Pada contoh di atas, status <strong>FULL</strong> menunjukkan <i>neighbor</i> telah berhasil melakukan sinkronisasi basis data <i>link-state</i> secara sempurna, sehingga <i>router</i> memiliki pandangan topologi yang sama dan siap untuk menghitung jalur terbaik. Status <strong>2WAY</strong> menandakan hubungan baru terbentuk sebatas pertukaran paket <i>Hello</i> dan belum mencapai sinkronisasi penuh. Jika status <i>neighbor</i> tetap berada pada <i>2WAY</i> atau <i>EXSTART</i> untuk waktu yang lama, maka kemungkinan besar ada masalah pada pertukaran informasi <i>Database Descriptor</i> (<i>DBD</i>).</p>
+
+    <!-- GAMBAR 3 : TAHAPAN PEMBENTUKAN NEIGHBOR OSPF -->
+    <figure>
+        <img src="ospf-neighbor-states.png" alt="Tahapan pembentukan neighbor OSPF">
+        <figcaption>Gambar 3. Tahapan pembentukan <i>neighbor</i> pada <i>protokol OSPF</i></figcaption>
+    </figure>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- BAGIAN : ALUR SISTEMATIS TROUBLESHOOTING                     -->
+    <!-- ============================================================ -->
+    <h2>F. Alur Sistematis <i>Troubleshooting Routing Dinamis</i></h2>
+
+    <p>Untuk memudahkan proses diagnosis, <i>troubleshooting routing dinamis</i> sebaiknya dilakukan secara bertahap mengikuti alur berikut, dimulai dari pemeriksaan lapisan fisik hingga pengujian konektivitas <i>end-to-end</i>. Pendekatan sistematis ini memastikan bahwa tidak ada langkah penting yang terlewat dan membantu mempersempit area pencarian masalah secara efisien.</p>
+
+    <p>Alur yang disarankan adalah sebagai berikut: pertama, periksa kondisi fisik jaringan (<i>interface</i> <i>up/up</i>, kabel terhubung). Kedua, verifikasi konfigurasi <i>IP</i> dan <i>subnet</i> pada setiap <i>interface</i>. Ketiga, periksa konfigurasi <i>protokol routing</i> (apakah <i>network</i> sudah di-<i>advertise</i>, apakah <i>timer</i> konsisten). Keempat, periksa status <i>neighbor</i> dan <i>adjacency</i>. Kelima, periksa <i>routing table</i> untuk memastikan rute yang diharapkan muncul. Keenam, lakukan pengujian konektivitas dengan <i>ping</i> dan <i>traceroute</i>. Jika masih ditemukan masalah, ulangi proses dengan fokus pada area yang dicurigai.</p>
+
+    <!-- GAMBAR 4 : ALUR TROUBLESHOOTING -->
+    <figure>
+        <img src="troubleshooting-flowchart.png" alt="Alur umum troubleshooting routing dinamis">
+        <figcaption>Gambar 4. Alur umum <i>troubleshooting routing dinamis</i></figcaption>
+    </figure>
+
+    <hr>
+
+    <!-- ============================================================ -->
+    <!-- BAGIAN : STUDI KASUS TROUBLESHOOTING                          -->
+    <!-- ============================================================ -->
+    <h2>G. Studi Kasus <i>Troubleshooting</i></h2>
+
+    <h3>Studi Kasus 1: <i>RIP</i> — Rute Tidak Muncul di <i>Routing Table</i></h3>
+    <p>Sebuah jaringan menggunakan <i>protokol RIPv2</i> pada tiga <i>router</i> (R1, R2, R3). Setelah konfigurasi selesai, jaringan yang terhubung pada R3 tidak muncul pada <i>routing table</i> R1. Gejala ini mengindikasikan bahwa ada masalah pada penyebaran informasi rute di jaringan, sehingga R1 tidak mengetahui cara mencapai jaringan di balik R3.</p>
+
+    <h4>Langkah Analisis:</h4>
+    <ol>
+        <li>Periksa status <i>interface</i> dengan <code>show ip interface brief</code> pada seluruh <i>router</i> untuk memastikan <i>interface</i> aktif (<i>up/up</i>). Jika ada <i>interface</i> yang <i>down</i>, maka <i>update routing</i> tidak akan dapat dikirim atau diterima melalui <i>interface</i> tersebut.</li>
+        <li>Periksa konfigurasi <i>RIP</i> dengan <code>show run | section router rip</code>, pastikan seluruh <i>network</i> yang terhubung sudah dideklarasikan menggunakan perintah <code>network</code>. Jika ada jaringan yang terlewat, <i>router</i> tidak akan meng-<i>advertise</i> jaringan tersebut ke <i>router</i> lain.</li>
+        <li>Periksa versi <i>RIP</i> yang digunakan (<code>show ip protocols</code>); <i>RIPv1</i> tidak mendukung <i>subnetting</i> (<i>classless</i>), sehingga apabila jaringan menggunakan <i>VLSM</i>, versi yang digunakan harus <i>RIPv2</i>. Jika versi yang digunakan salah, rute mungkin tidak akan di-<i>advertise</i> dengan benar.</li>
+        <li>Pastikan tidak ada <i>interface</i> yang <i>di-passive-interface</i> secara tidak sengaja sehingga <i>update routing</i> tidak dikirim melalui <i>interface</i> tersebut. Perintah <code>passive-interface</code> pada <i>RIP</i> akan menghentikan pengiriman <i>update</i> keluar dari <i>interface</i> tersebut, yang mungkin sangat diperlukan jika <i>interface</i> tersebut adalah jalur utama menuju <
